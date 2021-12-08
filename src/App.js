@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import React, {Component} from 'react';
 import { Route, Switch} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -8,6 +7,7 @@ import ProductList from './components/ProductList'
 import Details from './components/Details'
 import Cart from './components/Cart'
 import Default from './components/Default'
+import Modal from './components/Modal';
 
 class App extends Component {
   render(){
@@ -20,6 +20,7 @@ class App extends Component {
           <Route path="/cart"><Cart/></Route>
           <Route> <Default/></Route>
         </Switch>
+        <Modal />
       </>
     );
   }
