@@ -16,6 +16,10 @@ function ProductProvider(props) {
     const [cartTotal, setCartTotal] = useState(0)
 
     useEffect(() => {
+        setProductsInit();
+    }, [])
+
+    const setProductsInit = () => {
         setProducts(prevProduct=> {
             let tempProducts = [];
             storeProducts.forEach(item => {
@@ -24,8 +28,7 @@ function ProductProvider(props) {
             })
             return tempProducts
         })
-    }, [])
-
+    }
     const getItem = id => {
         const product = products.find(item => item.id === id);
         return product;
@@ -47,8 +50,12 @@ function ProductProvider(props) {
         setCart(oldCart => {
             return [...oldCart, product]
         })
-        console.log(products, detailProducts, cart)
+        
     }
+    useEffect(() => {
+        addTotals()
+    }, [cart])
+
     const openModal = id => {
         const product = getItem(id);
         setModalProduct(product);
@@ -59,7 +66,63 @@ function ProductProvider(props) {
         setModalOpen(false);
 
     }
+    const increment = id => {
+        let tempCart = [...cart];
+        const selectedProduct = tempCart.find(item => item.id === id);
+        const index = tempCart.indexOf(selectedProduct);
+        const product = tempCart[index];
+        product.count++;
+        product.total = product.count * product.price;
+        setCart([...tempCart]);
+
+    }
+    const decrement = id => {
+        let tempCart = [...cart];
+        const selectedProduct = tempCart.find(item => item.id === id);
+        const index = tempCart.indexOf(selectedProduct);
+        const product = tempCart[index];
+        product.count--;
+        product.total = product.count * product.price;
+        if (product.count === 0){
+            removeItem(id);
+        }
+        else {
+            setCart([...tempCart]);
+        }
+    }
+    const removeItem = (id) => {
+        let tempProducts = [...products]
+        const index = tempProducts.indexOf(getItem(id));
+        const product = tempProducts[index]
+        product.inCart = false;
+        product.count = 0;
+        product.total = 0;
+        setCart(oldCart => {
+            return oldCart.filter(item => item.id != id)
+        })
+        setProducts([...tempProducts])
+    }
     
+    const clearCart = () => {
+        setCart([]);
+        setProductsInit();
+        addTotals();
+
+    }
+
+    const addTotals = () => {
+        let subTotal = 0;
+        cart.map(item => {
+            subTotal += item.total
+        })
+        const tempTax = subTotal * 0.05;
+        const tax = parseFloat(tempTax.toFixed(2));
+        const total = subTotal + tax;
+        setCartSubTotal(subTotal);
+        setCartTax(tax);
+        setCartTotal(total);
+    }
+
     return (
         <ProductContext.Provider value={{
             products,
@@ -69,7 +132,15 @@ function ProductProvider(props) {
                modalOpen,
                closeModal,
                openModal,
-               modalProduct
+               modalProduct,
+               increment,
+               decrement,
+               clearCart,
+               removeItem,
+               cart,
+               cartSubTotal,
+               cartTax,
+               cartTotal
             }}>
             {props.children}
         </ProductContext.Provider>
