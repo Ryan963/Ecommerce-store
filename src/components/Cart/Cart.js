@@ -6,7 +6,7 @@ import EmptyCart from './EmptyCart';
 import CartList from './CartList';
 import CartTotals from './CartTotals';
 
-export default function Cart() {
+export default function Cart(props) {
     return (
         <section>
         <ProductConsumer>
@@ -22,7 +22,7 @@ export default function Cart() {
                             <Title name="your" title="cart" />
                             <CartColumns />
                             <CartList value={value}/>
-                            <CartTotals value={value}></CartTotals>
+                            <CartTotals value={value} history={props.history}></CartTotals>
                         </>
                         
                     )
